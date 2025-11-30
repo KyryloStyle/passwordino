@@ -528,17 +528,37 @@ html, body {
 }
 
 /* --- Responsive --- */
-@media (max-width: 1024px) {
-  .dashboard-grid { grid-template-columns: 1fr 1fr; }
-  .mega-input { font-size: 2rem; }
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mega-input {
+    font-size: 1.2rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
 }
 
-@media (max-width: 640px) {
-  .navbar { padding: 16px 24px; }
-  .main-content { padding: 24px; }
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .input-container { flex-wrap: wrap; gap: 16px; }
-  .controls { width: 100%; justify-content: flex-end; }
-  .mega-input { font-size: 1.5rem; }
-}
 </style>

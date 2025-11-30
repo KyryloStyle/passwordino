@@ -22,11 +22,12 @@ import SecurityGuide from './components/SecurityGuide.vue'
 
 <style>
 
-body {
+html, body {
   margin: 0;
   padding: 0;
   background: #232224; 
   color: #f9fafb;
   font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
 }
 </style>

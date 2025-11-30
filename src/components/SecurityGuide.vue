@@ -121,6 +121,8 @@
 .content-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 16px;   
+  box-sizing: border-box;
 }
 
 /* Header */
@@ -304,18 +306,34 @@ h3 {
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .cards-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .math-explainer {
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .math-result {
-    font-size: 14px;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
 }
+
+@media (max-width: 480px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .info-card {
+    padding: 20px;
+  }
+
+  .analogy, .formula-box {
+    font-size: 12px;
+  }
+}
+
 </style>
