@@ -5,6 +5,7 @@ A modern, client-side password strength checker and secure password generator bu
 **Live Demo:** [passwodino.vercel.app](https://www.passwordino.eu/) 
 
 ![Passwodino Screenshot](public/scr1.png) 
+![Passwodino Screenshot](public/scr2.png) 
 
 ---
 
