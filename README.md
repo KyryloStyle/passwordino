@@ -2,7 +2,7 @@
 
 A modern, client-side password strength checker and secure password generator built with Vue 3 and TypeScript. No data is ever sent to a server — all analysis runs entirely in the browser.
 
-**Live Demo:** [passwodino.vercel.app](https://www.passwordino.eu/) 
+**Live Demo:** [passwordino.eu](https://www.passwordino.eu/) 
 
 ![Passwodino Screenshot](public/scr1.png) 
 ![Passwodino Screenshot](public/scr2.png) 
