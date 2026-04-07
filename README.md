@@ -1,11 +1,11 @@
-# Passwodino — Password Strength Analyzer
+# Passwordino — Password Strength Analyzer
 
 A modern, client-side password strength checker and secure password generator built with Vue 3 and TypeScript. No data is ever sent to a server — all analysis runs entirely in the browser.
 
 **Live Demo:** [passwordino.eu](https://www.passwordino.eu/) 
 
-![Passwodino Screenshot](public/scr1.png) 
-![Passwodino Screenshot](public/scr2.png) 
+![Passwordino Screenshot](public/scr1.png) 
+![Passwordino Screenshot](public/scr2.png) 
 
 ---
 
