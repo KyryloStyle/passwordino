@@ -7,9 +7,9 @@
         <div class="photo-column">
           <div class="photo-frame">
            
-            <img 
-              src="../../public/logo-min.jpg" 
-              alt="Kyrylo Yurchenko" 
+            <img
+              src="/logo-min.jpg"
+              alt="Kyrylo Yurchenko"
               class="profile-img"
             />
             <div class="status-badge" title="Located in Germany">
@@ -80,18 +80,6 @@
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-/* Inherit Variables */
-:root {
-  --bg: #030712;
-  --surface: #111827;
-  --border: #374151;
-  --primary: #38bdf8;
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-}
-
 .profile-wrapper {
   width: 100%;
   background-color: var(--bg);

@@ -1,4 +1,11 @@
 // utils/passwordUtils.ts
+
+const SCORE_THRESHOLDS = {
+  MIN_LENGTH: 6,
+  GOOD_LENGTH: 9,
+  STRONG_LENGTH: 12,
+} as const
+
 export function calculateScore(password: string): number {
   let score = 0
   if (!password) return 0
@@ -6,21 +13,15 @@ export function calculateScore(password: string): number {
   if (/[A-Z]/.test(password)) score++
   if (/\d/.test(password)) score++
   if (/[^A-Za-z0-9]/.test(password)) score++
-  if (password.length >= 6) score++
-  if (password.length >= 9) score++
-  if (password.length >= 12) score++
+  if (password.length >= SCORE_THRESHOLDS.MIN_LENGTH) score++
+  if (password.length >= SCORE_THRESHOLDS.GOOD_LENGTH) score++
+  if (password.length >= SCORE_THRESHOLDS.STRONG_LENGTH) score++
   return score
-}
-
-export function strengthLabel(score: number): string {
-  if (score <= 2) return 'Weak'
-  if (score <= 4) return 'Medium'
-  return 'Strong'
 }
 
 export function getRecommendations(password: string): string[] {
   const s: string[] = []
-  if (password.length < 12) s.push('Increase the password length (12+ chars recommended).')
+  if (password.length < SCORE_THRESHOLDS.STRONG_LENGTH) s.push('Increase the password length (12+ chars recommended).')
   if (!/[A-Z]/.test(password)) s.push('Add at least one uppercase letter.')
   if (!/[a-z]/.test(password)) s.push('Add at least one lowercase letter.')
   if (!/\d/.test(password)) s.push('Include at least one number.')
@@ -29,17 +30,33 @@ export function getRecommendations(password: string): string[] {
   return s
 }
 
-// Простая оценка времени взлома (условная, грубая)
-export function estimateTimeToCrack(password: string) {
-  const len = password.length
-  if (len === 0) return { online: '-', cpu: '-', gpu: '-' }
-  if (len < 6) return { online: 'Instant', cpu: 'Minutes', gpu: 'Seconds' }
-  if (len < 10) return { online: 'Minutes', cpu: 'Hours', gpu: 'Minutes' }
-  if (len < 14) return { online: 'Hours', cpu: 'Days', gpu: 'Hours' }
-  return { online: 'Years', cpu: 'Decades', gpu: 'Years' }
+// Estimates based on log-scale arithmetic to handle large search spaces.
+// Assumes worst-case (no salting, fast algorithm like MD5/SHA1).
+// Real crack time depends on the hash algorithm and hardware used.
+export function estimateTimeToCrack(password: string, pool = 26) {
+  if (!password) return { online: '-', gpu: '-', cpu: '-' }
+
+  const log10SearchSpace = password.length * Math.log10(pool)
+
+  function guessesToTime(log10guessesPerSec: number): string {
+    const log10seconds = log10SearchSpace - log10guessesPerSec
+    if (log10seconds < 0) return 'Instant'
+    if (log10seconds < Math.log10(60)) return 'Seconds'
+    if (log10seconds < Math.log10(3_600)) return 'Minutes'
+    if (log10seconds < Math.log10(86_400)) return 'Hours'
+    if (log10seconds < Math.log10(86_400 * 365)) return 'Days'
+    if (log10seconds < Math.log10(86_400 * 365 * 1_000)) return 'Years'
+    if (log10seconds < Math.log10(86_400 * 365 * 1e9)) return 'Millennia'
+    return 'Practically Forever'
+  }
+
+  return {
+    online: guessesToTime(1),   // ~10/sec (rate-limited online attack)
+    gpu: guessesToTime(10),     // ~10 billion/sec (fast GPU, weak hash)
+    cpu: guessesToTime(13),     // ~10 trillion/sec (massive compute farm)
+  }
 }
 
-// Простейшие утилиты
 export function getPoolSize(password: string): number {
   let pool = 0
   if (/[a-z]/.test(password)) pool += 26
@@ -58,12 +75,15 @@ export function charTypesCount(password: string): string {
   return types.join(', ')
 }
 
-// Генератор случайного пароля
+const GENERATOR_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?'
+
+// Uses crypto.getRandomValues() for cryptographically secure random generation.
 export function generatePassword(length = 12): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?'
+  const array = new Uint32Array(length)
+  crypto.getRandomValues(array)
   let pwd = ''
   for (let i = 0; i < length; i++) {
-    pwd += chars.charAt(Math.floor(Math.random() * chars.length))
+    pwd += GENERATOR_CHARS.charAt((array[i] as number) % GENERATOR_CHARS.length)
   }
   return pwd
 }

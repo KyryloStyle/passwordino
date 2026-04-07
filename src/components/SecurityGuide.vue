@@ -44,17 +44,17 @@
           </ul>
         </article>
 
-        <!-- Card 3: Entropy -->
+        <!-- Card 3: Search Space -->
         <article class="info-card">
           <div class="icon-box success">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
           </div>
-          <h3>Entropy</h3>
+          <h3>Search Space</h3>
           <p class="description">
-            The total mathematical search space. This number represents how many guesses a hacker must make to guarantee finding the password.
+            The total number of possible combinations an attacker must check. The larger this number, the longer a brute-force attack takes.
           </p>
           <div class="formula-box">
-            $$ E = Pool^{Length} $$
+            S = Pool<sup style="font-size:12px">Length</sup>
           </div>
         </article>
 
@@ -93,21 +93,6 @@
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-/* Inherit Variables (Make sure these match your main App) */
-:root {
-  --bg: #030712;
-  --surface: #111827;
-  --surface-hover: #1f2937;
-  --border: #374151;
-  --primary: #38bdf8;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-}
-
 .guide-wrapper {
   width: 100%;
   background-color: var(--bg);

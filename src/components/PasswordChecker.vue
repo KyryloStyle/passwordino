@@ -27,6 +27,7 @@
             @input="onInput"
             autocomplete="off"
             spellcheck="false"
+            maxlength="128"
           />
           
           <div class="controls">
@@ -39,9 +40,10 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
             </button>
 
-            <button class="control-btn primary-action" @click="copyToClipboard" :class="{ 'success-state': copied }">
-              <span v-if="!copied">Copy</span>
-              <span v-else>Copied!</span>
+            <button class="control-btn primary-action" @click="copyToClipboard" :class="{ 'success-state': copied, 'error-state': copyError }">
+              <span v-if="copied">Copied!</span>
+              <span v-else-if="copyError">Failed!</span>
+              <span v-else>Copy</span>
             </button>
           </div>
         </div>
@@ -69,7 +71,7 @@
             </div>
             <div class="metric">
               <div class="metric-val">{{ combosDisplay }}</div>
-              <div class="metric-label">Entropy</div>
+              <div class="metric-label">Search Space</div>
             </div>
           </div>
         </div>
@@ -130,12 +132,14 @@ import {
   generatePassword
 } from '../utils/passwordUtils'
 
+const GENERATE_LENGTH = 18
+const COPY_FEEDBACK_MS = 2000
 
 const password = ref('')
 const show = ref(true)
 const copied = ref(false)
+const copyError = ref(false)
 const isFocused = ref(false)
-
 
 const hasLower = computed(() => /[a-z]/.test(password.value))
 const hasUpper = computed(() => /[A-Z]/.test(password.value))
@@ -143,25 +147,21 @@ const hasNumber = computed(() => /\d/.test(password.value))
 const hasSymbol = computed(() => /[^A-Za-z0-9]/.test(password.value))
 
 const score = computed(() => calculateScore(password.value))
+const poolSize = computed(() => getPoolSize(password.value))
 
 const label = computed(() => {
-  
   switch (score.value) {
     case 0: return ' '
     case 1: return 'Very Weak'
     case 2: return 'Weak'
     case 3: return 'Medium'
     case 4: return 'Strong'
-    case 5: return 'Very Strong'
-    default: return 'Enter Password'
+    default: return 'Very Strong'  // 5, 6, 7
   }
 })
 
-
-
-const recommendations = computed(() => getRecommendations(password.value)) // Ensure these are English in utils
-const time = computed(() => estimateTimeToCrack(password.value))
-const poolSize = computed(() => getPoolSize(password.value))
+const recommendations = computed(() => getRecommendations(password.value))
+const time = computed(() => estimateTimeToCrack(password.value, poolSize.value))
 
 const combosDisplay = computed(() => {
   if (!password.value) return '0'
@@ -171,8 +171,8 @@ const combosDisplay = computed(() => {
 
 const fillWidth = computed(() => {
   if (!password.value) return '0%'
-  const maxScore = 5 
-  return Math.min(100, (score.value / maxScore) * 100) + '%'
+  const MAX_SCORE = 7
+  return Math.min(100, (score.value / MAX_SCORE) * 100) + '%'
 })
 
 const strengthClass = computed(() => {
@@ -181,9 +181,7 @@ const strengthClass = computed(() => {
     case 1: return 'danger'
     case 2:
     case 3: return 'warning'
-    case 4: 
-    case 5: return 'success'
-    default: return 'neutral'
+    default: return 'success'  // 4, 5, 6, 7
   }
 })
 
@@ -191,17 +189,19 @@ const strengthClass = computed(() => {
 function toggleShow() { show.value = !show.value }
 
 function generate() {
-  password.value = generatePassword(18) // High default security
+  password.value = generatePassword(GENERATE_LENGTH)
   show.value = true
   copied.value = false
+  copyError.value = false
 }
 
 function onInput() {
   copied.value = false
+  copyError.value = false
 }
 
 function reloadPage() {
-  window.location.reload();
+  window.location.reload()
 }
 
 function scrollTo(sectionId: string) {
@@ -216,42 +216,16 @@ async function copyToClipboard() {
   try {
     await navigator.clipboard.writeText(password.value)
     copied.value = true
-    setTimeout(() => copied.value = false, 2000)
+    setTimeout(() => (copied.value = false), COPY_FEEDBACK_MS)
   } catch (err) {
-    console.error('Failed to copy', err)
+    console.error('Failed to copy:', err)
+    copyError.value = true
+    setTimeout(() => (copyError.value = false), COPY_FEEDBACK_MS)
   }
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-/* --- Reset & Base --- */
-:root {
-  --bg: #030712;
-  --surface: #111827;
-  --surface-hover: #1f2937;
-  --border: #374151;
-  
-  --primary: #38bdf8;
-  --primary-glow: rgba(56, 189, 248, 0.2);
-  
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --success: #10b981;
-  --neutral: #6b7280;
-  
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-}
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
 .app-layout {
   min-height: 100vh;
   width: 100%;
@@ -392,6 +366,10 @@ html, body {
 
 .success-state {
   background: var(--success) !important;
+  color: #fff !important;
+}
+.error-state {
+  background: var(--danger) !important;
   color: #fff !important;
 }
 
